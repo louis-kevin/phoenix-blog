@@ -1,5 +1,6 @@
 defmodule Blog.CommentsTest do
   use Blog.DataCase
+  import Blog.Factory
 
   alias Blog.Comments
 
@@ -11,9 +12,12 @@ defmodule Blog.CommentsTest do
     @invalid_attrs %{content: nil, name: nil}
 
     def comment_fixture(attrs \\ %{}) do
+      post = insert!(:post)
+      valid_attrs = Map.put(@valid_attrs, :post_id, post.id)
+
       {:ok, comment} =
         attrs
-        |> Enum.into(@valid_attrs)
+        |> Enum.into(valid_attrs)
         |> Comments.create_comment()
 
       comment
@@ -30,7 +34,9 @@ defmodule Blog.CommentsTest do
     end
 
     test "create_comment/1 with valid data creates a comment" do
-      assert {:ok, %Comment{} = comment} = Comments.create_comment(@valid_attrs)
+      post = insert!(:post)
+      valid_attrs = Map.put(@valid_attrs, :post_id, post.id)
+      assert {:ok, %Comment{} = comment} = Comments.create_comment(valid_attrs)
       assert comment.content == "some content"
       assert comment.name == "some name"
     end
